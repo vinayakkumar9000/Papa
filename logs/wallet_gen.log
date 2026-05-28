@@ -17,3 +17,187 @@
 2026-05-28 06:37:26 - wallet_gen - INFO - Successfully generated 2 wallets
 2026-05-28 06:37:26 - wallet_gen - INFO - Saved 2 wallets to TXT: output/wallets_20260528_063726.txt
 2026-05-28 06:37:26 - wallet_gen - INFO - Wallet generation completed successfully
+2026-05-28 06:49:46 - wallet_gen - INFO - Starting generation: count=10, batch_size=0, db=wallets.db
+2026-05-28 06:49:46 - wallet_gen - INFO - Connected to database: wallets.db
+2026-05-28 06:49:46 - wallet_gen - INFO - Wallets table created or verified
+2026-05-28 06:49:46 - wallet_gen - DEBUG - Generated wallet: 0x966f9E1f52754D95D7Fd72018474244606931D4A
+2026-05-28 06:49:46 - wallet_gen - DEBUG - Generated wallet: 0x84072BEC5Db27E2734F0Fdc08EdD747dA44B5756
+2026-05-28 06:49:46 - wallet_gen - DEBUG - Generated wallet: 0x219024122512C28f90c41e819DD0Dc1a5bC873Ed
+2026-05-28 06:49:46 - wallet_gen - DEBUG - Generated wallet: 0x5fEBea6d1387a85F7886915A261A5e0234dce540
+2026-05-28 06:49:46 - wallet_gen - DEBUG - Generated wallet: 0x40ADCCcBF9f008450e19aD12F0e65330c900dB59
+2026-05-28 06:49:46 - wallet_gen - DEBUG - Generated wallet: 0x09E8fd9483965d3c6Ce1D5806F2C79A0c6748b95
+2026-05-28 06:49:46 - wallet_gen - DEBUG - Generated wallet: 0xAfA730cA63FF5580578e3FEaFD7050844754D57A
+2026-05-28 06:49:46 - wallet_gen - DEBUG - Generated wallet: 0xa8c85a4e03f134010706dBDF48960f860aaA2ef2
+2026-05-28 06:49:46 - wallet_gen - DEBUG - Generated wallet: 0xCfF94724be557aAE02F87CB877C1B6Ea299aE6b5
+2026-05-28 06:49:46 - wallet_gen - DEBUG - Generated wallet: 0x8d00ec69d7393cA8765212B8b5754DE51D802276
+2026-05-28 06:49:46 - wallet_gen - INFO - Generation completed: 10 wallets generated
+2026-05-28 06:49:46 - wallet_gen - INFO - Database connection closed
+2026-05-28 06:49:54 - wallet_gen - INFO - Starting generation: count=15, batch_size=0, db=wallets.db
+2026-05-28 06:49:54 - wallet_gen - INFO - Connected to database: wallets.db
+2026-05-28 06:49:54 - wallet_gen - INFO - Wallets table created or verified
+2026-05-28 06:49:54 - wallet_gen - DEBUG - Generated wallet: 0xf0D4041C9a569E72DCBDA717e8fD2eee2052f2F7
+2026-05-28 06:49:54 - wallet_gen - DEBUG - Generated wallet: 0x3Ae0136aCc14bC7D99554A6350dE06E877Af90f6
+2026-05-28 06:49:54 - wallet_gen - DEBUG - Generated wallet: 0x1aE19f4a8754Ab8BBA9E17F0864De72310f10bBE
+2026-05-28 06:49:54 - wallet_gen - DEBUG - Generated wallet: 0x17B4cd4Fa340773347Ed799dedF74D28443eb5C5
+2026-05-28 06:49:54 - wallet_gen - DEBUG - Generated wallet: 0xb2993bfc86f422Abf6169767cEE58146c1DFAa06
+2026-05-28 06:49:54 - wallet_gen - DEBUG - Generated wallet: 0x07314dE8cCB034288c8d43a6e8f962477dE6aBAe
+2026-05-28 06:49:54 - wallet_gen - DEBUG - Generated wallet: 0xA56cA33c49ad73b1365E70b2080CDde68DF2C2B9
+2026-05-28 06:49:54 - wallet_gen - DEBUG - Generated wallet: 0x1C09de3e3C7b6Cf942596B0DBcAEb79BF84FE56e
+2026-05-28 06:49:54 - wallet_gen - DEBUG - Generated wallet: 0x1B4EB7F868CD9804BBed3E2D2bDcD15E56EAe9D7
+2026-05-28 06:49:54 - wallet_gen - DEBUG - Generated wallet: 0x07e8Aa07b7E2772036A6d61944e4f0aB65C4A8c5
+2026-05-28 06:49:54 - wallet_gen - DEBUG - Generated wallet: 0x7B835f007A6Fc7907c5875a19cc61320016eCaE3
+2026-05-28 06:49:54 - wallet_gen - DEBUG - Generated wallet: 0xe4320e9Efde25914115855E8cec5BD4BF6409b26
+2026-05-28 06:49:54 - wallet_gen - DEBUG - Generated wallet: 0xaF44764E45b92D7757FF7bB0CFb7C69b1e6E78b2
+2026-05-28 06:49:54 - wallet_gen - DEBUG - Generated wallet: 0x6e51299d84D06a324182Fd4343AD1b57CE94D4A6
+2026-05-28 06:49:54 - wallet_gen - DEBUG - Generated wallet: 0x30b62Ae98eC71107b3A287d8973e5a8792799400
+2026-05-28 06:49:54 - wallet_gen - INFO - Generation completed: 15 wallets generated
+2026-05-28 06:49:54 - wallet_gen - INFO - Database connection closed
+2026-05-28 06:50:00 - wallet_gen - INFO - Starting generation: count=100, batch_size=25, db=wallets.db
+2026-05-28 06:50:00 - wallet_gen - INFO - Connected to database: wallets.db
+2026-05-28 06:50:00 - wallet_gen - INFO - Wallets table created or verified
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x50199817239Bc18Cd471dEfc8431CFa6D875732c
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x5eC3b37ca3361EE78D9Fa0A28496C1fE550bB744
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x7740bEa29EC3E87dF69d157867B658887Fb47bb7
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xE0b281034cb7fB01450643709db860D76698Ea43
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x5f7fc69Dd7484fA294e0959E03a25CF73A1C5000
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x58c49751735e7eadA158B4b2ef94C2Ce9B0bbC92
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x69d73af263234D648FEd0e60A9bdF417a134C4a6
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xaDD97f6bBBECa408225b3c0BCA29ebC0ecA1A651
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xa6CF5fd60814a02fb4524cC7055dAE7551707BEF
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xA4ACa0825FB7B2c1796B8d161cf5C3a4Ab90e103
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xdf1535274ECc08e32343B2b69005F8c10bC57fEe
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x72E43fFE9488aB1c17aA708c94bf839781E9B45D
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x063220B5f8F374aEeAbB4a883033de6122BE69c6
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xc96b9e3879938a986484b3f9A2273781dC3F4fe2
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x7747df3421d4f2dF9656e77F42e897149Ae79cdA
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x1DE5884fB97664DC50fdfa89B6a8988404ceb158
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x9c49ecb6bec1d32fE1380de87EA9a0B2D6F7A902
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xb6f326a40d562f722ACFa7e166ABa1B4374aDa63
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x7Ee35Be14dDb0463f099273b6d03447B4e33117F
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x89aA6faF77ECd3F6095C990260849CF028731EEB
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x81468CD219A0F850f44C1aB657fcDE3c4FbFF19a
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x56Bee7935E79ABbc5473B9A662898525F2FF0F08
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x41D45Bb0e25dbBC165C673fD749848D75deC6ddf
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xfEF2464a2b768c818D5d70A056D95315b6E60421
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x640C8fb63F22A38803b6AFE300c27Eaa4c2c604B
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xE0760A8BC341077598BA57F314475D9f6D23a0c0
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x760C644776d8a18e539bdC50fF9F909b3fb39209
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x7007BbaD7d55F19AbbA6dc3E5159B23eAD409270
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xAAcE2DB666A9C4a63D14fB0D594374f60b088036
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x3e5a4f64D337dCa5d91c92747137d834c2981A94
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xB97062c46CD9B0cB05F3Ab77453378EA9402e90a
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x60a8F7DA01Ca83dA38a2F4387899633067b7e0Df
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xF30176e9E0B465BE8573cA34e2f8C106c4FD5818
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xA2Af2ECfb5b21922f749d63FFED4491e00b1eC37
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x48fFe567F02085d17BB3629eB781fa1B50B7fd1F
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xa0b49Ca3DdB86AfDfC7168b2d1F9e92633670De0
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xb580AbC5B8f986e3959402C218E889362Fa6B651
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x092c1a8a350F2376559599b84Dfe1f376D98999A
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x59cEc3F2f70371ECc6040a71713257ab146ce6fe
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x7eD56DF50282B14Eb6dD4fD12B0B604a3F49Ec4A
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x4A3ACEa5F5c1213216033796710e6E23cc7908AF
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x36d0ac7C015C183acACC9d78c1100d6FFD729C7B
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xC2aA0A0f02eC137d998a3061AbccC843659E27D0
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x28d6EdF92FeEd8B6312c289Ef7a97CA758204180
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x454930fb55d6255E1eD8c1F26EA4EF2BC1ac8A16
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x3Dc7D341feC2Efa5540338B4dFc0Db7E47C224cc
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x3644CEE85EF3A78E591c0C00a0A883E8a5fDEFC7
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xE63C509B35e4B1c16c94500AC6ECb9e9948f86Ed
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x80BB5BdB437a1c248bf337480A36580a743c2e29
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x3aAa0a94a887A7CE2e0E0aB32fDCF67CDB7a5dA8
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x19b547cD02FBC4d2d64E1e2d12E7B0ed205408f0
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x0c907bE4231e3580ea9eba04B0A7101Ba72Ff338
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x75C49F4EaB440463213bd2dC0524FF7022f1Ce36
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x40c9fD2cB0F11B31743230F38837C1e74212A9c0
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xdaC52d5b45A1Dc1c2dB96ad76cF1753391E6827B
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x178BF60685F249Bc8f2eD1e58c0722B5eaf412Ae
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x88DDD3b0060DC24eA8794e9737775485fCe450b9
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xf91b459ceA2134d98cf51ffa5174BCCd8971F1A0
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x5fBB36c96Db706A7d08144B8157ca35F35Aff094
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x75a0b348b9C8273eA7b442B7E7Ce1569025ae49E
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xf0F31ea59E6177BC4de7f449fC764C2AFfa4d9C2
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x1c8d28fF13f5C50f3B5A1bdcF7431c854e446dFe
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x7E5747784C0De243eEa59E411d059e4372A3f506
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xbDa249bbaCC80730e478Da652fb9582F34a786c7
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x98F5AA2968E674b0187F9e8c8e76398f25fbB67E
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xDc714EFC4621f5095d08D0571D9e027851d7fc31
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xc468183C143920531Fb9f459fc09fd9804ee8aCB
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x35eEa687102Ff145121f5C1d021963f5e8b1E621
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x9cD8454a871752db790fE8eA82488a7aFFdf21e2
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x170F27E8eC0e5Ed6c8ccC5C385736477519D5FbD
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x54F9E39B8742E7bC84c71913b64C6E4755A8eb25
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x4d239cA3CC66F0175c7A2befeC5bEEa1338a76BC
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xfD2EF7D61161e0F669CF12e9d104bB90DFed049F
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xF858B4a01cE54D9315fEddC0AB9b79b19c4C7CA1
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xF849A40743900A81FD1c88807c8b34EEC7B051Df
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xd72C609328Ce2Fb8cBC8Dc9Fbe294eA17f518FE1
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x1Ab12fE614637671c8BFAeB1607CEA7433906101
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x401AB2318552137CA5C3B9e03aD8398D43E46a86
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xF5F188C62A207ad8FD4519108C0D9De6b0582B55
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xb81df120bAE16f8f611A7C40ADD58517a1FF6573
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x3687E2e9cC3fe6241Ac49eb59cb700CD94aaFB66
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x3e35eB8DAe3836432D23C9D3B9141Dc6247C0f08
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xCbD8506bc72B55Bfb0de7e7393308C905bC420dE
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x912CBbd0BFeAF3f95099B64b89abb2A73b99bF73
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x48d62B82F88291cEb9B54888897769A7F4c5be34
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x7e3b739A09e8f04572eAA1A31719677E4Fb8D313
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x2Bd4990ADD87C02b0883528BB4d02717AB896106
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x231c904b8FAEfEed8E9619c334E3C57efcA22F6C
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x1f2d2Ac8d5E8B53B0fdee0e7e5BDf83c637Fd9B7
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xC2Ded567fCeB31AbEe0B530Fd41E0C49b4B65222
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x3401a723402F836549ee490Bb65DF2DC182a12C5
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x8fbf0d8cE66497409BaE7aEf8D7F4B3AaB19B052
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xD1f6e44f352075dC3E1F85173B32c4Db7438F9FA
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x1D6DfCD6f4b34969C16C8Fa263fC8f3c1664caC5
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xb45065f6A30DCd0b2736a871411851143F0c2F02
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xac374370FA14a0149b621049Ddad937e8E7a9235
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xF71a4A9E74299aB7207BFdb9BCD73B044Af1C2E8
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x0cbCb88D3bae1767eF1F64Ec5b46D4027a2Fb527
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0x50deB32d8038fc0daF7DC0e566fBD93A6B94973f
+2026-05-28 06:50:00 - wallet_gen - DEBUG - Generated wallet: 0xd43840Ce89672cd66251da3fA9F866929C05FF57
+2026-05-28 06:50:00 - wallet_gen - INFO - Generation completed: 100 wallets generated
+2026-05-28 06:50:00 - wallet_gen - INFO - Database connection closed
+2026-05-28 06:50:08 - wallet_gen - INFO - Starting generation: count=10, batch_size=0, db=wallets.db
+2026-05-28 06:50:08 - wallet_gen - INFO - Connected to database: wallets.db
+2026-05-28 06:50:08 - wallet_gen - INFO - Wallets table created or verified
+2026-05-28 06:50:08 - wallet_gen - DEBUG - Generated wallet: 0x754C89c5A43E206dA334d0f2719B989E02303A67
+2026-05-28 06:50:08 - wallet_gen - DEBUG - Generated wallet: 0x453b2ADb4e954F84649e793607F19Bebd5CA419A
+2026-05-28 06:50:08 - wallet_gen - DEBUG - Generated wallet: 0x8732a3384786b726612AdC44E349e98588190936
+2026-05-28 06:50:08 - wallet_gen - DEBUG - Generated wallet: 0x9569E5E4c7ceB17320058770Ebd95B08B2446AeB
+2026-05-28 06:50:08 - wallet_gen - DEBUG - Generated wallet: 0x13Db2Caa9ee388326EB316990a9bD3B63a8778cB
+2026-05-28 06:50:08 - wallet_gen - DEBUG - Generated wallet: 0xAB59B0BaD9f1C484955100f20d5aCbefdF5A8DA9
+2026-05-28 06:50:08 - wallet_gen - DEBUG - Generated wallet: 0x47EE29fe46F442Fb8fcD5D5997E6C044EDe0139a
+2026-05-28 06:50:08 - wallet_gen - DEBUG - Generated wallet: 0x51B1C9Eee6b813F00e4d0a514467575835A8A2e2
+2026-05-28 06:50:08 - wallet_gen - DEBUG - Generated wallet: 0xd5b8322686ed501226029A0C7e3BAfaf064f9E8c
+2026-05-28 06:50:08 - wallet_gen - DEBUG - Generated wallet: 0xAA45818FAFBCf66bFb517d021Baed1FA79da2974
+2026-05-28 06:50:08 - wallet_gen - INFO - Generation completed: 10 wallets generated
+2026-05-28 06:50:08 - wallet_gen - INFO - Database connection closed
+2026-05-28 06:50:17 - wallet_gen - INFO - Starting generation: count=20, batch_size=0, db=custom_test.db
+2026-05-28 06:50:17 - wallet_gen - INFO - Connected to database: custom_test.db
+2026-05-28 06:50:17 - wallet_gen - INFO - Wallets table created or verified
+2026-05-28 06:50:17 - wallet_gen - DEBUG - Generated wallet: 0xB2465416F57Db508Cea01272c15a6cC4C70DFE3C
+2026-05-28 06:50:17 - wallet_gen - DEBUG - Generated wallet: 0x588Ef8dB13efD2a92CcC5E270f826D58Ae311eEa
+2026-05-28 06:50:17 - wallet_gen - DEBUG - Generated wallet: 0x1A4643E55FB62214d0e5b36c948516AC7a2D613b
+2026-05-28 06:50:17 - wallet_gen - DEBUG - Generated wallet: 0x0D4D5fb93DD8ce93AD495528621030D841C445B6
+2026-05-28 06:50:17 - wallet_gen - DEBUG - Generated wallet: 0xCF8d62de63f3c91336b41f3308BAeCc2529309E6
+2026-05-28 06:50:17 - wallet_gen - DEBUG - Generated wallet: 0xbE7DfDBfA5f02344eC89180b08c9a2B3a52897Ee
+2026-05-28 06:50:17 - wallet_gen - DEBUG - Generated wallet: 0x2bE024F4578fddBf6B6669014Dd9032590Ab8994
+2026-05-28 06:50:17 - wallet_gen - DEBUG - Generated wallet: 0xd6D71eeDD79376F78BCF3722a54F48AcaB279480
+2026-05-28 06:50:17 - wallet_gen - DEBUG - Generated wallet: 0x5CE8c1F787A367b6E9eF3dcd76FC68bf612354dC
+2026-05-28 06:50:17 - wallet_gen - DEBUG - Generated wallet: 0x7bB377159C3287AF2cfF0194c2Dae5F159e6E740
+2026-05-28 06:50:17 - wallet_gen - DEBUG - Generated wallet: 0xac208f6Eb4BB6574596C91e419AC24AE8a043A52
+2026-05-28 06:50:17 - wallet_gen - DEBUG - Generated wallet: 0x2d95D4A4388255eC1150BCBd2ECA080285D34ebE
+2026-05-28 06:50:17 - wallet_gen - DEBUG - Generated wallet: 0xd913C200405E9Dd18d0aD9d7c1c7B95660f91a3A
+2026-05-28 06:50:17 - wallet_gen - DEBUG - Generated wallet: 0x13c0BFB74F2a0360186F1F0E6F90719cA53E9d3F
+2026-05-28 06:50:17 - wallet_gen - DEBUG - Generated wallet: 0xf2556653F32Fc4c31dCb251e6de919c0CCD62844
+2026-05-28 06:50:17 - wallet_gen - DEBUG - Generated wallet: 0xDca87846960e80Dc609AA36828E61Ee4ae5B0011
+2026-05-28 06:50:17 - wallet_gen - DEBUG - Generated wallet: 0xE23494806c78c29791127b3AF0771378200A8FC5
+2026-05-28 06:50:17 - wallet_gen - DEBUG - Generated wallet: 0xb84c491D95B2aB01C45fc7E370f54520d49878Db
+2026-05-28 06:50:17 - wallet_gen - DEBUG - Generated wallet: 0x79c53f6dcD747ead533b1B7310CB892a169B875d
+2026-05-28 06:50:17 - wallet_gen - DEBUG - Generated wallet: 0xa821d52082bC6c5EE94285FCc7120f59ea91a63c
+2026-05-28 06:50:17 - wallet_gen - INFO - Generation completed: 20 wallets generated
+2026-05-28 06:50:17 - wallet_gen - INFO - Database connection closed
+2026-05-28 06:50:33 - wallet_gen - INFO - Starting generation: count=5, batch_size=0, db=wallets.db
+2026-05-28 06:50:33 - wallet_gen - INFO - Connected to database: wallets.db
+2026-05-28 06:50:33 - wallet_gen - INFO - Wallets table created or verified
+2026-05-28 06:50:33 - wallet_gen - INFO - Database connection closed
