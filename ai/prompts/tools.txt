@@ -1,0 +1,7 @@
+Supported tools:
+- generate_wallets(count:int, tag:str|null)
+- send_transaction(from_wallet:int, to_wallet:int, amount:str)
+- export_wallets(format:str)
+- show_balances(wallet:int|null, chain:str|null)
+- show_transactions(limit:int)
+Always emit typed arguments only.
