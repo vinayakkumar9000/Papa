@@ -27,7 +27,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 
 import secrets
 from eth_account import Account
@@ -101,8 +101,10 @@ class WalletGenerator:
 
         logger = logging.getLogger("wallet_gen")
         
-        # Clear existing handlers to avoid duplicates
-        logger.handlers.clear()
+        # Clear existing handlers only if they exist (avoid unnecessary clearing)
+        if logger.handlers:
+            logger.handlers.clear()
+        
         logger.setLevel(logging.DEBUG)
 
         # Create rotating file handler
@@ -228,7 +230,7 @@ class WalletGenerator:
             raise
 
     def insert_wallet_batch(
-        self, wallets: list[Tuple[str, str]], commit_interval: int = 100
+        self, wallets: List[Tuple[str, str]], commit_interval: int = 100
     ) -> int:
         """
         Insert multiple wallets in a batch transaction.
@@ -308,9 +310,6 @@ class WalletGenerator:
         """
         if not isinstance(count, int) or count <= 0:
             raise ValueError("Count must be a positive integer")
-
-        if count > 1000000:
-            raise ValueError("Count cannot exceed 1,000,000")
 
         self.stats.start_time = time.time()
         use_batch = batch_size > 0
@@ -542,7 +541,7 @@ def main() -> None:
 
         # Display banner
         if not args.quiet:
-            banner = Text("🔐 EVM Wallet Generator - SQLite Storage", style="bold cyan")
+            banner = Text("EVM Wallet Generator - SQLite Storage", style="bold cyan")
             generator._print(
                 Panel(
                     banner,

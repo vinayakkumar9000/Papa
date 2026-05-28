@@ -201,3 +201,12 @@
 2026-05-28 06:50:33 - wallet_gen - INFO - Connected to database: wallets.db
 2026-05-28 06:50:33 - wallet_gen - INFO - Wallets table created or verified
 2026-05-28 06:50:33 - wallet_gen - INFO - Database connection closed
+2026-05-28 06:51:52 - wallet_gen - INFO - Starting generation: count=5, batch_size=0, db=wallets.db
+2026-05-28 06:51:52 - wallet_gen - INFO - Connected to database: wallets.db
+2026-05-28 06:51:52 - wallet_gen - INFO - Wallets table created or verified
+2026-05-28 06:51:52 - wallet_gen - DEBUG - Generated wallet: 0x3EDa88158C35746de1BffFf7DA8575c962f650E4
+2026-05-28 06:51:52 - wallet_gen - DEBUG - Generated wallet: 0x4c2cc466FAC694Ca10A3F6916450183EcFDCd13b
+2026-05-28 06:51:52 - wallet_gen - DEBUG - Generated wallet: 0x56D7Fe01D09A7bC84e05282810B6AB35765F2Ce0
+2026-05-28 06:51:52 - wallet_gen - DEBUG - Generated wallet: 0xCd097a5c77849aa10Cb2cBB26B0723498474A167
+2026-05-28 06:51:52 - wallet_gen - DEBUG - Generated wallet: 0x223D67a1027b791c17Fda09A007a58083f22aFB7
+2026-05-28 06:51:52 - wallet_gen - INFO - Database connection closed
