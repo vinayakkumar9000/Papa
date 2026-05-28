@@ -1,0 +1,19 @@
+2026-05-28 06:37:08 - wallet_gen - INFO - Starting wallet generation: count=3, format=json
+2026-05-28 06:37:08 - wallet_gen - DEBUG - Generated wallet: 0xB50fdF3934E20E0F398B61F8bec86E45144d12c7
+2026-05-28 06:37:08 - wallet_gen - DEBUG - Generated wallet: 0xF95b7b00bA89fc4773dbB1C564255d54945e5E88
+2026-05-28 06:37:08 - wallet_gen - DEBUG - Generated wallet: 0x30Eb7937a149e39c60Fb6b7a5789a42d4427a746
+2026-05-28 06:37:08 - wallet_gen - INFO - Successfully generated 3 wallets
+2026-05-28 06:37:08 - wallet_gen - INFO - Saved 3 wallets to JSON: output/wallets_20260528_063708.json
+2026-05-28 06:37:08 - wallet_gen - INFO - Wallet generation completed successfully
+2026-05-28 06:37:20 - wallet_gen - INFO - Starting wallet generation: count=2, format=csv
+2026-05-28 06:37:20 - wallet_gen - DEBUG - Generated wallet: 0xBF335D7a38320cb20DF9135b17823b83a614Fc28
+2026-05-28 06:37:20 - wallet_gen - DEBUG - Generated wallet: 0xE9fB5b2da42F91e24555CfE1218CA325EA84Edce
+2026-05-28 06:37:20 - wallet_gen - INFO - Successfully generated 2 wallets
+2026-05-28 06:37:20 - wallet_gen - INFO - Saved 2 wallets to CSV: output/wallets_20260528_063720.csv
+2026-05-28 06:37:20 - wallet_gen - INFO - Wallet generation completed successfully
+2026-05-28 06:37:26 - wallet_gen - INFO - Starting wallet generation: count=2, format=txt
+2026-05-28 06:37:26 - wallet_gen - DEBUG - Generated wallet: 0xAfA15439499830DB42A8874Cb3cafF4A04139215
+2026-05-28 06:37:26 - wallet_gen - DEBUG - Generated wallet: 0x7E102E74C66a6520158c051939801AF2D19C64dE
+2026-05-28 06:37:26 - wallet_gen - INFO - Successfully generated 2 wallets
+2026-05-28 06:37:26 - wallet_gen - INFO - Saved 2 wallets to TXT: output/wallets_20260528_063726.txt
+2026-05-28 06:37:26 - wallet_gen - INFO - Wallet generation completed successfully
