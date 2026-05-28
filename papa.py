@@ -18,7 +18,7 @@ from wallet.balance import BalanceService
 from wallet.chains import ChainRegistry
 from wallet.database import DatabaseManager
 from wallet.tx_sender import TransactionSender
-from ai.router import route_prompt
+from ai.parser import intent_to_tool_call, parse_prompt
 
 app = typer.Typer(help="Papa multi-chain wallet CLI")
 networks_app = typer.Typer(help="Network management commands")
@@ -65,7 +65,7 @@ def wallets_command(
 
 @app.command("send")
 def send_command(
-    from_wallet: str = typer.Option(..., "--from", help="Wallet ref: id, address, or tag:<name>"),
+    from_wallet: str = typer.Option(..., "--from-wallet", "--from", help="Wallet ref: id, address, or tag:<name>"),
     to: str = typer.Option(..., "--to", help="Destination wallet address"),
     amount: str = typer.Option(..., help="Amount like 1wei, 1gwei, 0.1ether"),
     chain: Optional[str] = typer.Option(None, help="Network key from config"),
@@ -182,7 +182,7 @@ def batch_send_command(
 
 @app.command("ai")
 def ai_command(
-    prompt: str = typer.Argument(..., help="Natural language prompt"),
+    prompt: Optional[str] = typer.Argument(None, help="Natural language prompt"),
     model: str = typer.Option("qwen2.5:3b", help="Ollama model name"),
 ) -> None:
     """Parse and validate AI command routing with Ollama startup checks."""
@@ -192,11 +192,17 @@ def ai_command(
     except OllamaError as exc:
         raise typer.BadParameter(str(exc)) from exc
 
-    tool_call = route_prompt(prompt)
-    if not tool_call:
+    if not prompt:
+        from cli.interactive import launch_interactive
+        launch_interactive()
+        return
+
+    intent = parse_prompt(prompt)
+    if not intent:
         console.print("[yellow]No supported tool call detected in prompt.[/yellow]")
         return
 
+    tool_call = intent_to_tool_call(intent)
     console.print(f"[green]Tool:[/green] {tool_call.tool}")
     console.print(f"[green]Args:[/green] {tool_call.args}")
 
