@@ -1,0 +1,67 @@
+2026-05-28 07:02:41 - converter - INFO - Database scan: found 1 databases
+2026-05-28 07:02:41 - converter - INFO - Using specified database: test_wallets.db
+2026-05-28 07:02:41 - converter - INFO - Connected to database: test_wallets.db
+2026-05-28 07:02:41 - converter - INFO - Database validation successful. Total wallets: 5
+2026-05-28 07:02:41 - converter - ERROR - Error fetching wallets: near "OFFSET": syntax error
+2026-05-28 07:02:41 - converter - ERROR - Unexpected error in JSON export: near "OFFSET": syntax error
+2026-05-28 07:02:41 - converter - ERROR - Export failed
+2026-05-28 07:02:41 - converter - INFO - Database connection closed
+2026-05-28 07:02:50 - converter - INFO - Database scan: found 1 databases
+2026-05-28 07:02:50 - converter - INFO - Using specified database: test_wallets.db
+2026-05-28 07:02:50 - converter - INFO - Connected to database: test_wallets.db
+2026-05-28 07:02:50 - converter - INFO - Database validation successful. Total wallets: 5
+2026-05-28 07:02:50 - converter - DEBUG - Wallet fetch completed (limit=None, offset=0)
+2026-05-28 07:02:50 - converter - INFO - Exported 5 wallets to JSON: exports/wallets_20260528_070250.json
+2026-05-28 07:02:50 - converter - INFO - Export completed successfully in 0.00s - 5 rows exported
+2026-05-28 07:02:50 - converter - INFO - Database connection closed
+2026-05-28 07:02:53 - converter - INFO - Database scan: found 1 databases
+2026-05-28 07:02:53 - converter - INFO - Using specified database: test_wallets.db
+2026-05-28 07:02:53 - converter - INFO - Connected to database: test_wallets.db
+2026-05-28 07:02:53 - converter - INFO - Database validation successful. Total wallets: 5
+2026-05-28 07:02:53 - converter - DEBUG - Wallet fetch completed (limit=None, offset=0)
+2026-05-28 07:02:53 - converter - INFO - Exported 5 wallets to CSV: exports/wallets_20260528_070253.csv
+2026-05-28 07:02:53 - converter - INFO - Export completed successfully in 0.00s - 5 rows exported
+2026-05-28 07:02:53 - converter - INFO - Database connection closed
+2026-05-28 07:02:53 - converter - INFO - Database scan: found 1 databases
+2026-05-28 07:02:53 - converter - INFO - Using specified database: test_wallets.db
+2026-05-28 07:02:53 - converter - INFO - Connected to database: test_wallets.db
+2026-05-28 07:02:53 - converter - INFO - Database validation successful. Total wallets: 5
+2026-05-28 07:02:53 - converter - DEBUG - Wallet fetch completed (limit=None, offset=0)
+2026-05-28 07:02:53 - converter - INFO - Exported 5 wallets to TXT: exports/wallets_20260528_070253.txt
+2026-05-28 07:02:53 - converter - INFO - Export completed successfully in 0.00s - 5 rows exported
+2026-05-28 07:02:53 - converter - INFO - Database connection closed
+2026-05-28 07:02:53 - converter - INFO - Database scan: found 1 databases
+2026-05-28 07:02:53 - converter - INFO - Using specified database: test_wallets.db
+2026-05-28 07:02:53 - converter - INFO - Connected to database: test_wallets.db
+2026-05-28 07:02:53 - converter - INFO - Database validation successful. Total wallets: 5
+2026-05-28 07:02:53 - converter - DEBUG - Wallet fetch completed (limit=None, offset=0)
+2026-05-28 07:02:53 - converter - INFO - Exported 5 wallets to SQL: exports/wallets_20260528_070253.sql
+2026-05-28 07:02:53 - converter - INFO - Export completed successfully in 0.00s - 5 rows exported
+2026-05-28 07:02:53 - converter - INFO - Database connection closed
+2026-05-28 07:02:53 - converter - INFO - Database scan: found 1 databases
+2026-05-28 07:02:53 - converter - INFO - Using specified database: test_wallets.db
+2026-05-28 07:02:53 - converter - INFO - Connected to database: test_wallets.db
+2026-05-28 07:02:53 - converter - INFO - Database validation successful. Total wallets: 5
+2026-05-28 07:02:53 - converter - DEBUG - Wallet fetch completed (limit=None, offset=0)
+2026-05-28 07:02:53 - converter - INFO - Exported 5 wallets to NDJSON: exports/wallets_20260528_070253.ndjson
+2026-05-28 07:02:53 - converter - INFO - Export completed successfully in 0.00s - 5 rows exported
+2026-05-28 07:02:53 - converter - INFO - Database connection closed
+2026-05-28 07:02:53 - converter - INFO - Database scan: found 1 databases
+2026-05-28 07:02:53 - converter - INFO - Using specified database: test_wallets.db
+2026-05-28 07:02:53 - converter - INFO - Connected to database: test_wallets.db
+2026-05-28 07:02:53 - converter - INFO - Database validation successful. Total wallets: 5
+2026-05-28 07:02:53 - converter - DEBUG - Wallet fetch completed (limit=None, offset=0)
+2026-05-28 07:02:53 - converter - INFO - Exported 5 wallets to TSV: exports/wallets_20260528_070253.tsv
+2026-05-28 07:02:53 - converter - INFO - Export completed successfully in 0.00s - 5 rows exported
+2026-05-28 07:02:53 - converter - INFO - Database connection closed
+2026-05-28 07:03:04 - converter - INFO - Database scan: found 1 databases
+2026-05-28 07:03:04 - converter - INFO - Using specified database: test_wallets.db
+2026-05-28 07:03:04 - converter - INFO - Connected to database: test_wallets.db
+2026-05-28 07:03:04 - converter - INFO - Database validation successful. Total wallets: 5
+2026-05-28 07:03:04 - converter - DEBUG - Wallet fetch completed (limit=2, offset=0)
+2026-05-28 07:03:04 - converter - INFO - Exported 2 wallets to CSV: exports/wallets_20260528_070304.csv
+2026-05-28 07:03:04 - converter - INFO - Export completed successfully in 0.00s - 2 rows exported
+2026-05-28 07:03:04 - converter - INFO - Database connection closed
+2026-05-28 07:03:15 - converter - INFO - Database scan: found 1 databases
+2026-05-28 07:03:15 - converter - ERROR - Specified database not found: nonexistent.db
+2026-05-28 07:03:15 - converter - INFO - Database selection cancelled
