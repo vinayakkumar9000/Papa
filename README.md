@@ -48,6 +48,8 @@ utils/
   helpers.py
 papa.py
 install.sh
+setup/install.sh
+setup/bootstrap.py
 ```
 
 ## Database Extensions
@@ -132,3 +134,37 @@ Example intent parsing supported:
 
 `send 1 wei from wallet 2 to wallet 8` →
 `{"tool":"send_transaction","args":{"from_wallet":2,"to_wallet":8,"amount":"1wei"}}`
+
+
+## Ollama Bootstrap & First-Run Behavior
+
+Running `./install.sh` now calls `setup/install.sh`, which executes `setup/bootstrap.py` and performs these steps automatically:
+
+1. Detects OS (`Linux`, `macOS`, or fallback).
+2. Installs Ollama if missing:
+   - Linux: official installer script.
+   - macOS: `brew install ollama`.
+3. Starts and enables Ollama service so `ollama serve` is not needed manually:
+   - Linux with systemd: `systemctl enable --now ollama`.
+   - macOS: `brew services start ollama`.
+   - Unsupported/no service manager: background fallback (`nohup ollama serve ... &`).
+4. Waits until daemon is reachable at `http://127.0.0.1:11434/api/tags`.
+5. Pulls model `qwen2.5:3b`.
+6. Verifies model availability via `ollama list`.
+
+If any step fails, bootstrap exits with an actionable error.
+
+### AI command startup checks
+
+Before executing `python papa.py ai ...`, the CLI now ensures:
+
+- Ollama binary exists.
+- Ollama daemon is reachable (and auto-started with service/fallback strategy if not).
+- Requested model exists (auto-pulls if missing).
+
+Example:
+
+```bash
+python papa.py ai "send 1 wei from wallet 2 to wallet 8" --model qwen2.5:3b
+```
+

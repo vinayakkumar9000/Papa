@@ -11,10 +11,12 @@ from rich.console import Console
 from rich.table import Table
 
 from utils.helpers import load_settings
+from utils.ollama import OllamaError, ensure_daemon, ensure_model
 from wallet.balance import BalanceService
 from wallet.chains import ChainRegistry
 from wallet.database import DatabaseManager
 from wallet.tx_sender import TransactionSender
+from ai.router import route_prompt
 
 app = typer.Typer(help="Papa multi-chain wallet CLI")
 networks_app = typer.Typer(help="Network management commands")
@@ -160,6 +162,28 @@ def batch_send_command(
         )
         console.print(f"[{i + 1}/{count}] {result.tx_hash} -> {result.explorer_url}")
 
+
+
+
+@app.command("ai")
+def ai_command(
+    prompt: str = typer.Argument(..., help="Natural language prompt"),
+    model: str = typer.Option("qwen2.5:3b", help="Ollama model name"),
+) -> None:
+    """Parse and validate AI command routing with Ollama startup checks."""
+    try:
+        ensure_daemon()
+        ensure_model(model)
+    except OllamaError as exc:
+        raise typer.BadParameter(str(exc)) from exc
+
+    tool_call = route_prompt(prompt)
+    if not tool_call:
+        console.print("[yellow]No supported tool call detected in prompt.[/yellow]")
+        return
+
+    console.print(f"[green]Tool:[/green] {tool_call.tool}")
+    console.print(f"[green]Args:[/green] {tool_call.args}")
 
 @networks_app.command("list")
 def networks_list(db: Optional[str] = typer.Option(None)) -> None:

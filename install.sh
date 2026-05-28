@@ -12,6 +12,8 @@ pip install -r requirements.txt
 
 mkdir -p logs exports config
 
+"$ROOT_DIR/setup/install.sh"
+
 if [ ! -f config/networks.json ]; then
   cat > config/networks.json <<'JSON'
 {
