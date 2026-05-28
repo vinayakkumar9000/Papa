@@ -1,0 +1,10 @@
+{
+  "skale_base_sepolia": {
+    "name": "SKALE Base Sepolia",
+    "rpc_url": "https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha",
+    "explorer": "https://base-sepolia-testnet-explorer.skalenodes.com",
+    "native_token": "CREDIT",
+    "decimals": 18,
+    "chain_id": 324705682
+  }
+}
