@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import time
+from uuid import uuid4
 from dataclasses import dataclass
 from typing import Optional
 
@@ -136,7 +137,7 @@ class TransactionSender:
         error_text = str(last_error) if last_error else "unknown error"
         self.db.add_transaction(
             TransactionRecord(
-                tx_hash=f"failed-{int(time.time())}",
+                tx_hash=f"failed-{uuid4()}",
                 sender=sender_wallet.address,
                 receiver=receiver,
                 amount_wei=amount_wei,

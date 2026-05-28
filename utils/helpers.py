@@ -81,7 +81,10 @@ def secure_private_key(raw_value: str) -> str:
     if value.startswith("{") and value.endswith("}"):
         password = os.getenv("PAPA_WALLET_PASSWORD")
         if not password:
-            raise ValueError("Encrypted key detected but PAPA_WALLET_PASSWORD is missing")
+            raise ValueError(
+                "Encrypted keystore detected but PAPA_WALLET_PASSWORD is not set. "
+                "Set it with: export PAPA_WALLET_PASSWORD='your_password'"
+            )
         key_json = json.loads(value)
         key_bytes = Account.decrypt(key_json, password)
         return f"0x{key_bytes.hex()}"

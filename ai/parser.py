@@ -8,7 +8,7 @@ from typing import Optional
 from ai.tools import ToolCall, send_transaction_tool
 
 _SEND_RE = re.compile(
-    r"send\s+(?P<amount>[0-9.]+\s*(?:wei|gwei|ether)?)\s+from\s+wallet\s+(?P<from>\d+)\s+to\s+wallet\s+(?P<to>\d+)",
+    r"send\s+(?P<amount>[0-9.]+\s*(?:wei|gwei|ether))\s+from\s+wallet\s+(?P<from>\d+)\s+to\s+wallet\s+(?P<to>\d+)",
     re.IGNORECASE,
 )
 

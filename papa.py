@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-import random
+import secrets
 from typing import Optional
 
 import typer
@@ -145,12 +145,13 @@ def batch_send_command(
     selected_chain = chain or settings["default_chain"]
     dbm, _, tx_sender, _ = _services(db)
 
-    wallets = dbm.list_wallets(limit=max(count, 500), tag=tag)
+    fetch_limit = 500 if random_wallet else max(count, 1)
+    wallets = dbm.list_wallets(limit=fetch_limit, tag=tag)
     if not wallets:
         raise typer.BadParameter("No wallets available for batch send")
 
     for i in range(count):
-        sender = random.choice(wallets)["id"] if random_wallet else wallets[i % len(wallets)]["id"]
+        sender = secrets.choice(wallets)["id"] if random_wallet else wallets[i % len(wallets)]["id"]
         result = tx_sender.send_native(
             from_wallet=str(sender),
             to_address=to,
