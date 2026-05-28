@@ -68,7 +68,7 @@ class TransactionSender:
             raise ConnectionError(f"RPC connection failed for {chain.name}")
 
         amount_wei = parse_amount_to_wei(amount, decimals=chain.decimals)
-        retries = int(self.settings.get("retry_count", 3))
+        retries = max(1, int(self.settings.get("retry_count", 3)))
         backoff = float(self.settings.get("retry_backoff_seconds", 1.5))
 
         last_error: Optional[Exception] = None

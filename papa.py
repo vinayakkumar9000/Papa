@@ -151,9 +151,9 @@ def batch_send_command(
         raise typer.BadParameter("No wallets available for batch send")
 
     for i in range(count):
-        sender = secrets.choice(wallets)["id"] if random_wallet else wallets[i % len(wallets)]["id"]
+        sender_id = secrets.choice(wallets)["id"] if random_wallet else wallets[i % len(wallets)]["id"]
         result = tx_sender.send_native(
-            from_wallet=str(sender),
+            from_wallet=str(sender_id),
             to_address=to,
             amount=amount,
             chain_key=selected_chain,
