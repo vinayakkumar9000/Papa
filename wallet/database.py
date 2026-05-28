@@ -67,6 +67,49 @@ class DatabaseManager:
                 FOREIGN KEY (wallet_id) REFERENCES wallets(id)
             )
             """,
+            """
+            CREATE TABLE IF NOT EXISTS ai_memory (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                memory_key TEXT NOT NULL,
+                memory_type TEXT NOT NULL DEFAULT 'generic',
+                memory_value TEXT NOT NULL,
+                metadata_json TEXT,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(memory_key, memory_type)
+            )
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS command_history (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                prompt TEXT NOT NULL,
+                parsed_intent TEXT,
+                outcome TEXT NOT NULL,
+                wallet_ref TEXT,
+                chain TEXT,
+                export_format TEXT,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+            """,
+            """
+            CREATE VIEW IF NOT EXISTS tx_history AS
+            SELECT
+                id,
+                tx_hash,
+                sender,
+                receiver,
+                amount_wei,
+                amount_display,
+                chain,
+                status,
+                gas_used,
+                gas_price_wei,
+                nonce,
+                explorer_url,
+                error_message,
+                created_at
+            FROM transactions
+            """,
         ]
 
         with self.engine.begin() as conn:
@@ -189,6 +232,142 @@ class DatabaseManager:
         with self.engine.begin() as conn:
             rows = conn.execute(text(query), params).mappings().all()
         return [dict(row) for row in rows]
+
+    def record_command(
+        self,
+        prompt: str,
+        outcome: str,
+        parsed_intent: Optional[str] = None,
+        wallet_ref: Optional[str] = None,
+        chain: Optional[str] = None,
+        export_format: Optional[str] = None,
+    ) -> None:
+        with self.engine.begin() as conn:
+            conn.execute(
+                text(
+                    """
+                    INSERT INTO command_history
+                    (prompt, parsed_intent, outcome, wallet_ref, chain, export_format)
+                    VALUES
+                    (:prompt, :parsed_intent, :outcome, :wallet_ref, :chain, :export_format)
+                    """
+                ),
+                {
+                    "prompt": prompt,
+                    "parsed_intent": parsed_intent,
+                    "outcome": outcome,
+                    "wallet_ref": wallet_ref,
+                    "chain": chain,
+                    "export_format": export_format,
+                },
+            )
+
+    def list_recent_commands(self, limit: int = 20) -> List[Dict[str, Any]]:
+        with self.engine.begin() as conn:
+            rows = conn.execute(
+                text(
+                    """
+                    SELECT id, prompt, parsed_intent, outcome, wallet_ref, chain, export_format, created_at
+                    FROM command_history
+                    ORDER BY id DESC
+                    LIMIT :limit
+                    """
+                ),
+                {"limit": limit},
+            ).mappings().all()
+        return [dict(row) for row in rows]
+
+    def upsert_ai_memory(
+        self,
+        memory_key: str,
+        memory_value: str,
+        memory_type: str = "generic",
+        metadata: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        metadata_json = json.dumps(metadata) if metadata is not None else None
+        with self.engine.begin() as conn:
+            conn.execute(
+                text(
+                    """
+                    INSERT INTO ai_memory
+                    (memory_key, memory_type, memory_value, metadata_json, updated_at)
+                    VALUES
+                    (:memory_key, :memory_type, :memory_value, :metadata_json, CURRENT_TIMESTAMP)
+                    ON CONFLICT(memory_key, memory_type) DO UPDATE SET
+                        memory_value = excluded.memory_value,
+                        metadata_json = excluded.metadata_json,
+                        updated_at = CURRENT_TIMESTAMP
+                    """
+                ),
+                {
+                    "memory_key": memory_key,
+                    "memory_type": memory_type,
+                    "memory_value": memory_value,
+                    "metadata_json": metadata_json,
+                },
+            )
+
+    def get_ai_memory(self, memory_key: str, memory_type: str = "generic") -> Optional[Dict[str, Any]]:
+        with self.engine.begin() as conn:
+            row = conn.execute(
+                text(
+                    """
+                    SELECT id, memory_key, memory_type, memory_value, metadata_json, created_at, updated_at
+                    FROM ai_memory
+                    WHERE memory_key = :memory_key AND memory_type = :memory_type
+                    """
+                ),
+                {"memory_key": memory_key, "memory_type": memory_type},
+            ).mappings().first()
+        if not row:
+            return None
+        item = dict(row)
+        metadata_json = item.get("metadata_json")
+        if metadata_json:
+            try:
+                item["metadata"] = json.loads(metadata_json)
+            except JSONDecodeError:
+                item["metadata"] = None
+        else:
+            item["metadata"] = None
+        return item
+
+    def get_preferred_chain(self) -> Optional[str]:
+        memory = self.get_ai_memory("preferred_chain", "preference")
+        return memory["memory_value"] if memory else None
+
+    def set_preferred_chain(self, chain: str) -> None:
+        self.upsert_ai_memory("preferred_chain", chain, memory_type="preference")
+
+    def get_preferred_export_format(self) -> Optional[str]:
+        memory = self.get_ai_memory("preferred_export_format", "preference")
+        return memory["memory_value"] if memory else None
+
+    def set_preferred_export_format(self, export_format: str) -> None:
+        self.upsert_ai_memory("preferred_export_format", export_format, memory_type="preference")
+
+    def get_recent_wallet_references(self, limit: int = 10) -> List[str]:
+        with self.engine.begin() as conn:
+            rows = conn.execute(
+                text(
+                    """
+                    SELECT wallet_ref
+                    FROM command_history
+                    WHERE wallet_ref IS NOT NULL AND trim(wallet_ref) <> ''
+                    ORDER BY id DESC
+                    LIMIT :limit
+                    """
+                ),
+                {"limit": limit},
+            ).scalars().all()
+        seen = set()
+        ordered: List[str] = []
+        for ref in rows:
+            if ref in seen:
+                continue
+            seen.add(ref)
+            ordered.append(ref)
+        return ordered
 
     def add_wallet_tag(self, wallet_id: int, tag: str) -> None:
         with self.engine.begin() as conn:
