@@ -1,0 +1,8 @@
+default_chain: skale_base_sepolia
+database_path: wallets.db
+rpc_timeout: 20
+retry_count: 3
+retry_backoff_seconds: 1.5
+gas:
+  strategy: auto
+  default_limit: 21000
