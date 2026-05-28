@@ -21,7 +21,7 @@ def parse_amount_to_wei(amount: str, decimals: int = 18) -> int:
     """Parse amount strings like 1wei, 1gwei, 0.1ether to wei."""
     match = _AMOUNT_RE.match(amount)
     if not match:
-        raise ValueError("Amount must be like 1wei, 1gwei, or 0.0001ether")
+        raise ValueError("Amount must be > 0 and formatted like 1wei, 1gwei, or 0.0001ether")
 
     number_raw, unit_raw = match.groups()
     unit = (unit_raw or "ether").lower()

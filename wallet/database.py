@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from json import JSONDecodeError
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
@@ -90,7 +91,10 @@ class DatabaseManager:
         if not networks_path.exists():
             return
 
-        data: Dict[str, Dict[str, Any]] = json.loads(networks_path.read_text(encoding="utf-8"))
+        try:
+            data: Dict[str, Dict[str, Any]] = json.loads(networks_path.read_text(encoding="utf-8"))
+        except JSONDecodeError as exc:
+            raise ValueError(f"Invalid network config JSON in {networks_path}") from exc
         with self.engine.begin() as conn:
             for key, cfg in data.items():
                 conn.execute(

@@ -68,16 +68,16 @@ class TransactionSender:
             raise ConnectionError(f"RPC connection failed for {chain.name}")
 
         amount_wei = parse_amount_to_wei(amount, decimals=chain.decimals)
+        actual_chain_id = int(w3.eth.chain_id)
+        if actual_chain_id != chain.chain_id:
+            raise ValueError(f"Chain mismatch: expected {chain.chain_id}, got {actual_chain_id}")
+
         retries = max(1, int(self.settings.get("retry_count", 3)))
         backoff = float(self.settings.get("retry_backoff_seconds", 1.5))
 
         last_error: Optional[Exception] = None
         for attempt in range(1, retries + 1):
             try:
-                chain_id = int(w3.eth.chain_id)
-                if chain_id != chain.chain_id:
-                    raise ValueError(f"Chain mismatch: expected {chain.chain_id}, got {chain_id}")
-
                 resolved_nonce = nonce if nonce is not None else NonceManager.next_nonce(w3, sender_wallet.address)
                 tx_base = {
                     "from": sender_wallet.address,
