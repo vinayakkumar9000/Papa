@@ -10,6 +10,8 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
+from utils.dependency_checks import validate_dependencies
+
 from utils.helpers import load_settings
 from utils.ollama import OllamaError, ensure_daemon, ensure_model
 from wallet.balance import BalanceService
@@ -28,6 +30,19 @@ def _services(db_path: Optional[str] = None) -> tuple[DatabaseManager, ChainRegi
     db = DatabaseManager(db_path=db_path)
     db.migrate()
     return db, ChainRegistry(db), TransactionSender(db), BalanceService(db)
+
+
+@app.command("doctor")
+def doctor_command() -> None:
+    """Validate required runtime dependencies and version compatibility."""
+    errors = validate_dependencies()
+    if errors:
+        console.print("[red]Dependency validation failed:[/red]")
+        for err in errors:
+            console.print(f" - {err}")
+        raise typer.Exit(code=1)
+
+    console.print("[green]Dependency validation passed[/green]")
 
 
 @app.command("wallets")
