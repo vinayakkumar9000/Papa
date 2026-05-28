@@ -48,7 +48,7 @@ def wallets_command(
 
 @app.command("send")
 def send_command(
-    from_wallet: str = typer.Option(..., "--from", help="Wallet id/address from DB"),
+    from_wallet: str = typer.Option(..., "--from", help="Wallet ref: id, address, or tag:<name>"),
     to: str = typer.Option(..., "--to", help="Destination wallet address"),
     amount: str = typer.Option(..., help="Amount like 1wei, 1gwei, 0.1ether"),
     chain: Optional[str] = typer.Option(None, help="Network key from config"),
@@ -78,7 +78,7 @@ def send_command(
 
 @app.command("balance")
 def balance_command(
-    wallet: str = typer.Option(..., help="Wallet id/address"),
+    wallet: str = typer.Option(..., help="Wallet ref: id, address, or tag:<name>"),
     chain: Optional[str] = typer.Option(None),
     db: Optional[str] = typer.Option(None),
 ) -> None:
