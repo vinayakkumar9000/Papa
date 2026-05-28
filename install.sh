@@ -10,6 +10,16 @@ source .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 
+python - <<'PY'
+from utils.dependency_checks import validate_dependencies
+
+errors = validate_dependencies()
+if errors:
+    raise SystemExit("Dependency validation failed after install:\n" + "\n".join(f"- {e}" for e in errors))
+
+print("Dependency validation passed")
+PY
+
 mkdir -p logs exports config
 
 if [ ! -f config/networks.json ]; then
