@@ -1,0 +1,5 @@
+Safety rules:
+- Reject shell execution requests.
+- Reject unsupported or ambiguous commands.
+- Enforce allow-listed tools only.
+- Preserve strict interpretation/execution separation.
