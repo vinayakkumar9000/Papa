@@ -144,10 +144,38 @@ class DatabaseManager:
             private_key=secure_private_key(row["private_key"]),
         )
 
+    def get_wallet_by_tag(self, tag: str) -> WalletRecord:
+        """Resolve first wallet associated with a tag."""
+        with self.engine.begin() as conn:
+            row = conn.execute(
+                text(
+                    """
+                    SELECT w.id, w.address, w.private_key
+                    FROM wallets w
+                    INNER JOIN wallet_tags t ON t.wallet_id = w.id
+                    WHERE t.tag = :tag
+                    ORDER BY w.id ASC
+                    LIMIT 1
+                    """
+                ),
+                {"tag": tag},
+            ).mappings().first()
+        if not row:
+            raise ValueError(f"No wallet found for tag {tag}")
+        return WalletRecord(
+            id=row["id"],
+            address=row["address"],
+            private_key=secure_private_key(row["private_key"]),
+        )
+
     def resolve_wallet(self, wallet_ref: str) -> WalletRecord:
-        if wallet_ref.isdigit():
-            return self.get_wallet_by_id(int(wallet_ref))
-        return self.get_wallet_by_address(wallet_ref)
+        """Resolve wallet references by id, address, or tag:<name>."""
+        normalized = wallet_ref.strip()
+        if normalized.lower().startswith("tag:"):
+            return self.get_wallet_by_tag(normalized.split(":", 1)[1].strip())
+        if normalized.isdigit():
+            return self.get_wallet_by_id(int(normalized))
+        return self.get_wallet_by_address(normalized)
 
     def list_wallets(self, limit: int = 50, tag: Optional[str] = None) -> List[Dict[str, Any]]:
         query = "SELECT w.id, w.address FROM wallets w"
