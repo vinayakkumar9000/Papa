@@ -70,6 +70,7 @@ class DatabaseConverter:
         self.logger = self._setup_logging()
         self.selected_db: Optional[Path] = None
         self.connection: Optional[sqlite3.Connection] = None
+        self._databases_cache: Optional[List[Path]] = None
 
     def _setup_logging(self) -> logging.Logger:
         """
@@ -108,12 +109,18 @@ class DatabaseConverter:
         """
         Scan project directory for SQLite database files.
 
+        Results are cached to avoid redundant filesystem scans.
+
         Returns:
             List of Path objects for found .db files.
         """
+        if self._databases_cache is not None:
+            return self._databases_cache
+
         cwd = Path.cwd()
         databases = sorted(cwd.glob("*.db"))
-        
+
+        self._databases_cache = databases
         self.logger.info(f"Database scan: found {len(databases)} databases")
         return databases
 
@@ -186,6 +193,7 @@ class DatabaseConverter:
         """
         try:
             # Open in read-only mode using URI
+            # Note: check_same_thread=False is safe here as this is a single-threaded CLI tool
             uri = f"file:{db_path}?mode=ro"
             self.connection = sqlite3.connect(uri, uri=True, check_same_thread=False)
             self.selected_db = db_path
@@ -273,6 +281,7 @@ class DatabaseConverter:
         Fetch wallets from database in streaming batches.
 
         Uses memory-efficient chunked processing to support large databases.
+        Note: This tool requires SQLite for database access.
 
         Args:
             limit: Maximum number of wallets to fetch (None for all).
@@ -288,14 +297,18 @@ class DatabaseConverter:
         try:
             cursor = self.connection.cursor()
 
-            # SQLite requires LIMIT before OFFSET
+            # Build query - SQLite requires LIMIT before OFFSET
             if limit:
                 query = "SELECT id, address, private_key FROM wallets ORDER BY id ASC LIMIT ? OFFSET ?"
                 cursor.execute(query, (limit, offset))
-            else:
-                # For unlimited queries, use a large limit to allow OFFSET
-                query = "SELECT id, address, private_key FROM wallets ORDER BY id ASC LIMIT -1 OFFSET ?"
+            elif offset:
+                # When only offset is specified without limit, use a large number
+                query = "SELECT id, address, private_key FROM wallets ORDER BY id ASC LIMIT 9223372036854775807 OFFSET ?"
                 cursor.execute(query, (offset,))
+            else:
+                # No limit or offset - fetch all results
+                query = "SELECT id, address, private_key FROM wallets ORDER BY id ASC"
+                cursor.execute(query)
 
             while True:
                 rows = cursor.fetchmany(batch_size)
@@ -373,7 +386,9 @@ class DatabaseConverter:
         offset: int = 0
     ) -> Optional[str]:
         """
-        Export wallets to JSON format.
+        Export wallets to JSON format using streaming approach.
+
+        Writes JSON array incrementally without loading entire database into RAM.
 
         Args:
             output_path: Custom output filename.
@@ -390,19 +405,28 @@ class DatabaseConverter:
             filename = output_path or f"wallets_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
             filepath = EXPORT_DIR / filename
 
-            wallets = []
-            for batch in self.fetch_wallets(limit, offset):
-                for wallet_id, address, private_key in batch:
-                    wallets.append({
-                        "id": wallet_id,
-                        "address": address,
-                        "private_key": private_key
-                    })
-
             with open(filepath, "w") as f:
-                json.dump(wallets, f, indent=2)
+                f.write("[\n")
+                row_count = 0
+                first_item = True
 
-            self.logger.info(f"Exported {len(wallets)} wallets to JSON: {filepath}")
+                for batch in self.fetch_wallets(limit, offset):
+                    for wallet_id, address, private_key in batch:
+                        if not first_item:
+                            f.write(",\n")
+                        
+                        obj = {
+                            "id": wallet_id,
+                            "address": address,
+                            "private_key": private_key
+                        }
+                        f.write("  " + json.dumps(obj))
+                        row_count += 1
+                        first_item = False
+
+                f.write("\n]\n")
+
+            self.logger.info(f"Exported {row_count} wallets to JSON: {filepath}")
             return str(filepath)
 
         except IOError as e:
@@ -480,12 +504,18 @@ class DatabaseConverter:
         if not self._create_export_dir():
             return None
 
+        if not self.selected_db:
+            self.logger.error("No database selected for SQL export")
+            self.console.print("[red]Error: No database selected[/red]")
+            return None
+
         try:
             filename = output_path or f"wallets_{datetime.now().strftime('%Y%m%d_%H%M%S')}.sql"
             filepath = EXPORT_DIR / filename
 
             with open(filepath, "w") as f:
                 f.write("-- Wallet Database Export\n")
+                f.write(f"-- Source Database: {self.selected_db.name}\n")
                 f.write(f"-- Exported: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
                 f.write("CREATE TABLE IF NOT EXISTS wallets (\n")
                 f.write("    id INTEGER PRIMARY KEY,\n")
@@ -817,6 +847,9 @@ def main() -> None:
         # Perform export with timing
         start_time = time.time()
 
+        # Initialize output_file
+        output_file: Optional[str] = None
+
         if args.format == "txt":
             output_file = converter.export_txt(args.output, args.limit, args.offset)
         elif args.format == "json":
@@ -862,13 +895,15 @@ def main() -> None:
     except KeyboardInterrupt:
         if converter:
             converter.logger.warning("Export interrupted by user")
-        print("\n[yellow]Export interrupted by user[/yellow]")
+            converter.console.print("\n[yellow]Export interrupted by user[/yellow]")
         sys.exit(130)
 
     except Exception as e:
         if converter:
             converter.logger.exception(f"Unexpected error: {e}")
-        print(f"[red]Error: {e}[/red]")
+            converter.console.print(f"[red]Error: {e}[/red]")
+        else:
+            print(f"Error: {e}")
         sys.exit(1)
 
     finally:
