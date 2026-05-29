@@ -417,6 +417,44 @@ class WalletGenerator:
         except sqlite3.Error as e:
             self.logger.error(f"Error closing connection: {e}")
 
+    def generate_wallets(self, count: int, batch_size: int = 0) -> int:
+        """
+        Generate and insert wallets directly into database.
+        
+        This is a compatibility layer method that handles the full lifecycle:
+        - Connects to database
+        - Creates table if needed
+        - Generates and inserts wallets
+        - Closes connection
+        
+        Args:
+            count: Number of wallets to generate.
+            batch_size: Batch size for inserts (0 for streaming mode).
+            
+        Returns:
+            Number of wallets successfully generated and inserted.
+            
+        Raises:
+            ValueError: If count is invalid.
+        """
+        try:
+            # Connect and setup
+            self.connection = self.create_connection()
+            self.create_table()
+            
+            # Generate and insert
+            self.generate_and_insert(count, batch_size)
+            
+            # Return count of generated wallets
+            return self.stats.wallets_inserted
+            
+        except Exception as e:
+            self.logger.error(f"Wallet generation error: {e}")
+            raise
+            
+        finally:
+            self.close_connection()
+
     def main_flow(self, count: int, batch_size: int = 0) -> None:
         """
         Main workflow: initialize, generate, display results.
