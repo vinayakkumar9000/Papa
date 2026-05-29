@@ -186,3 +186,4 @@
 2026-05-29 01:10:43 - converter - DEBUG - Wallet fetch completed (limit=None, offset=0)
 2026-05-29 01:10:43 - converter - INFO - Exported 1 wallets to TXT: exports/wallets_20260529_011043.txt
 2026-05-29 01:10:43 - converter - INFO - Database connection closed
+2026-05-29 01:16:25 - converter - ERROR - Unsupported export format: invalid_format. Supported formats: txt, json, csv, sql, ndjson, tsv
