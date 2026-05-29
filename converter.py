@@ -717,7 +717,67 @@ class DatabaseConverter:
             except Exception as e:
                 self.logger.error(f"Error closing connection: {e}")
 
+    def close_connection(self) -> None:
+        """
+        Alias for close() for backward compatibility.
+        
+        Close database connection.
+        """
+        self.close()
 
+    def export_wallets(
+        self,
+        fmt: str,
+        output_path: Optional[str] = None,
+        limit: Optional[int] = None,
+        offset: int = 0
+    ) -> Optional[str]:
+        """
+        Export wallets in the specified format.
+        
+        This is a compatibility layer method that routes to the appropriate
+        export method based on format. Supported formats:
+        - txt: Pipe-separated format (id|address|private_key)
+        - json: JSON array format
+        - csv: Comma-separated values
+        - sql: SQL INSERT statements
+        - ndjson: Newline-delimited JSON
+        - tsv: Tab-separated values
+        
+        Args:
+            fmt: Export format (txt, json, csv, sql, ndjson, tsv).
+            output_path: Optional custom output filename.
+            limit: Optional maximum number of wallets to export.
+            offset: Number of wallets to skip (default: 0).
+            
+        Returns:
+            Path to exported file as string, or None on error.
+            
+        Raises:
+            ValueError: If format is not supported.
+        """
+        fmt_lower = fmt.lower().strip()
+        
+        # Route to the appropriate export method
+        if fmt_lower == "txt":
+            return self.export_txt(output_path, limit, offset)
+        elif fmt_lower == "json":
+            return self.export_json(output_path, limit, offset)
+        elif fmt_lower == "csv":
+            return self.export_csv(output_path, limit, offset)
+        elif fmt_lower == "sql":
+            return self.export_sql(output_path, limit, offset)
+        elif fmt_lower == "ndjson":
+            return self.export_ndjson(output_path, limit, offset)
+        elif fmt_lower == "tsv":
+            return self.export_tsv(output_path, limit, offset)
+        else:
+            error_msg = f"Unsupported export format: {fmt}. Supported formats: txt, json, csv, sql, ndjson, tsv"
+            self.logger.error(error_msg)
+            self.console.print(f"[red]Error: {error_msg}[/red]")
+            return None
+
+ 
 def parse_arguments() -> argparse.Namespace:
     """
     Parse and validate command-line arguments.

@@ -81,3 +81,4 @@
 2026-05-28 07:08:16 - converter - INFO - Exported 2 wallets to TXT: exports/wallets_20260528_070816.txt
 2026-05-28 07:08:16 - converter - INFO - Export completed successfully in 0.00s - 2 rows exported
 2026-05-28 07:08:16 - converter - INFO - Database connection closed
+2026-05-29 01:09:05 - converter - ERROR - Unsupported export format: invalid_format. Supported formats: txt, json, csv, sql, ndjson, tsv
