@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from typing import TYPE_CHECKING, Any, Optional
 
 from ai.brain import think_and_act
@@ -32,5 +33,56 @@ class AutonomousController:
 
     def run_confirmed(self, call: ToolCall) -> Any:
         output = dispatch_tool_call(call, confirmed=True)
+        self.memory.remember_output(output)
+        return output
+
+    async def run_async(self, prompt: str) -> Any:
+        """
+        Execute autonomous control flow asynchronously.
+        
+        Interprets user prompt and executes the resulting intent in a non-blocking manner.
+        Uses async inference where available with fallback to sync operations.
+        
+        Args:
+            prompt: User input string
+            
+        Returns:
+            Output from executed tool/action
+            
+        Raises:
+            ValueError: If no actionable intent is detected
+        """
+        # Try async interpretation first, falls back to sync internally
+        from ai.ollama_inference import infer_intent_from_llm_async
+        
+        intent = await infer_intent_from_llm_async(prompt)
+        
+        if intent is None:
+            # Fall back to sync interpret if async inference fails
+            intent = interpret(prompt)
+        
+        if intent is None:
+            raise ValueError("No actionable intent detected")
+        
+        self.memory.remember_intent(intent)
+        
+        # Dispatch in thread pool to avoid blocking
+        output = await asyncio.to_thread(think_and_act, prompt)
+        self.memory.remember_output(output)
+        
+        return output
+
+    async def run_confirmed_async(self, call: ToolCall) -> Any:
+        """
+        Execute a confirmed tool call asynchronously.
+        
+        Args:
+            call: ToolCall object representing the confirmed action
+            
+        Returns:
+            Output from executed tool
+        """
+        # Dispatch in thread pool to avoid blocking
+        output = await asyncio.to_thread(dispatch_tool_call, call, True)
         self.memory.remember_output(output)
         return output

@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 from pathlib import Path
 from typing import Any
 
+import aiohttp
 import ollama
 
 from ai.parser import Intent, ToolCall
@@ -129,4 +131,65 @@ def infer_intent_from_llm(prompt: str, model: str = DEFAULT_MODEL) -> Intent | N
     
     except Exception as e:
         logger.error(f"Ollama inference failed: {type(e).__name__}: {e}")
+        return None
+
+
+async def infer_intent_from_llm_async(prompt: str, model: str = DEFAULT_MODEL, base_url: str = OLLAMA_BASE_URL) -> Intent | None:
+    """
+    Use Ollama LLM to interpret a user prompt into a structured Intent asynchronously.
+    
+    Falls back to sync version if async HTTP unavailable.
+    
+    Args:
+        prompt: User input string
+        model: Ollama model name (default: qwen2.5:3b)
+        base_url: Ollama server base URL
+    
+    Returns:
+        Intent object if inference succeeds, None otherwise
+    """
+    try:
+        system_prompt = _construct_system_prompt()
+        
+        # Try async HTTP call to Ollama API
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=30)) as session:
+            try:
+                payload = {
+                    "model": model,
+                    "prompt": f"{system_prompt}\n\nUser: {prompt}",
+                    "stream": False,
+                }
+                
+                async with session.post(f"{base_url}/api/generate", json=payload) as resp:
+                    if resp.status == 200:
+                        data = await resp.json()
+                        response_text = data.get("response", "").strip()
+                        
+                        if not response_text:
+                            logger.warning("Empty response from async LLM")
+                            return None
+                        
+                        # Parse into Intent
+                        intent = _parse_llm_response(response_text)
+                        
+                        if intent:
+                            logger.debug(f"Async LLM interpreted '{prompt}' -> action={intent.action}, payload={intent.payload}")
+                        else:
+                            logger.warning(f"Failed to parse async LLM response into Intent")
+                        
+                        return intent
+                    else:
+                        logger.warning(f"Ollama async API returned status {resp.status}")
+                        return None
+            except asyncio.TimeoutError:
+                logger.warning("Ollama async inference timed out, falling back to sync")
+                # Fall back to sync version
+                return infer_intent_from_llm(prompt, model)
+            except Exception as e:
+                logger.warning(f"Ollama async inference failed: {type(e).__name__}: {e}, falling back to sync")
+                # Fall back to sync version
+                return infer_intent_from_llm(prompt, model)
+    
+    except Exception as e:
+        logger.error(f"Ollama async inference failed: {type(e).__name__}: {e}")
         return None
