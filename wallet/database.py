@@ -379,3 +379,174 @@ class DatabaseManager:
                 {"limit": limit},
             ).mappings().all()
         return [dict(row) for row in rows]
+
+    # Transaction Queue Methods (for transaction retry logic)
+
+    def queue_transaction(
+        self,
+        tx_hash: str,
+        wallet_address: str,
+        chain: str,
+        status: str = "pending",
+        max_retries: int = 5,
+        metadata: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        """Add a transaction to the retry queue."""
+        metadata_json = json.dumps(metadata) if metadata is not None else None
+        with self.engine.begin() as conn:
+            conn.execute(
+                text(
+                    """
+                    INSERT OR IGNORE INTO transaction_queue
+                    (tx_hash, wallet_address, chain, status, max_retries, metadata_json)
+                    VALUES
+                    (:tx_hash, :wallet_address, :chain, :status, :max_retries, :metadata_json)
+                    """
+                ),
+                {
+                    "tx_hash": tx_hash,
+                    "wallet_address": wallet_address,
+                    "chain": chain,
+                    "status": status,
+                    "max_retries": max_retries,
+                    "metadata_json": metadata_json,
+                },
+            )
+
+    def get_queued_transactions(self, limit: int = 50) -> List[Dict[str, Any]]:
+        """Get pending transactions from the queue."""
+        with self.engine.begin() as conn:
+            rows = conn.execute(
+                text(
+                    """
+                    SELECT id, tx_hash, wallet_address, chain, status, retry_count, 
+                           max_retries, last_attempt_at, next_retry_at, error_message, 
+                           metadata_json, created_at, updated_at
+                    FROM transaction_queue
+                    WHERE status = 'pending'
+                    ORDER BY next_retry_at ASC NULLS FIRST
+                    LIMIT :limit
+                    """
+                ),
+                {"limit": limit},
+            ).mappings().all()
+        
+        result = []
+        for row in rows:
+            item = dict(row)
+            if item.get("metadata_json"):
+                try:
+                    item["metadata"] = json.loads(item["metadata_json"])
+                except JSONDecodeError:
+                    item["metadata"] = None
+            else:
+                item["metadata"] = None
+            result.append(item)
+        return result
+
+    def update_queued_transaction(
+        self,
+        tx_hash: str,
+        status: str,
+        error_message: Optional[str] = None,
+        retry_count: Optional[int] = None,
+        next_retry_at: Optional[str] = None,
+    ) -> None:
+        """Update a queued transaction's status and retry information."""
+        with self.engine.begin() as conn:
+            conn.execute(
+                text(
+                    """
+                    UPDATE transaction_queue
+                    SET status = :status,
+                        error_message = :error_message,
+                        retry_count = COALESCE(:retry_count, retry_count),
+                        next_retry_at = :next_retry_at,
+                        last_attempt_at = CURRENT_TIMESTAMP,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE tx_hash = :tx_hash
+                    """
+                ),
+                {
+                    "tx_hash": tx_hash,
+                    "status": status,
+                    "error_message": error_message,
+                    "retry_count": retry_count,
+                    "next_retry_at": next_retry_at,
+                },
+            )
+
+    def remove_queued_transaction(self, tx_hash: str) -> None:
+        """Remove a transaction from the queue."""
+        with self.engine.begin() as conn:
+            conn.execute(
+                text("DELETE FROM transaction_queue WHERE tx_hash = :tx_hash"),
+                {"tx_hash": tx_hash},
+            )
+
+    # Balance Cache Methods (for reducing RPC calls)
+
+    def cache_balance(self, wallet_address: str, chain: str, balance_wei: str) -> None:
+        """Cache a wallet's balance."""
+        with self.engine.begin() as conn:
+            conn.execute(
+                text(
+                    """
+                    INSERT INTO balance_cache (wallet_address, chain, balance_wei)
+                    VALUES (:wallet_address, :chain, :balance_wei)
+                    ON CONFLICT(wallet_address, chain) DO UPDATE SET
+                        balance_wei = excluded.balance_wei,
+                        updated_at = CURRENT_TIMESTAMP
+                    """
+                ),
+                {
+                    "wallet_address": wallet_address,
+                    "chain": chain,
+                    "balance_wei": balance_wei,
+                },
+            )
+
+    def get_cached_balance(self, wallet_address: str, chain: str) -> Optional[str]:
+        """Get cached balance for a wallet."""
+        with self.engine.begin() as conn:
+            result = conn.execute(
+                text(
+                    """
+                    SELECT balance_wei FROM balance_cache
+                    WHERE wallet_address = :wallet_address AND chain = :chain
+                    """
+                ),
+                {"wallet_address": wallet_address, "chain": chain},
+            ).scalar()
+        return result
+
+    def list_cached_balances(self, wallet_address: str) -> List[Dict[str, Any]]:
+        """Get cached balances for a wallet across all chains."""
+        with self.engine.begin() as conn:
+            rows = conn.execute(
+                text(
+                    """
+                    SELECT wallet_address, chain, balance_wei, updated_at
+                    FROM balance_cache
+                    WHERE wallet_address = :wallet_address
+                    ORDER BY updated_at DESC
+                    """
+                ),
+                {"wallet_address": wallet_address},
+            ).mappings().all()
+        return [dict(row) for row in rows]
+
+    def clear_expired_balance_cache(self, hours: int = 24) -> int:
+        """Clear balance cache entries older than specified hours."""
+        with self.engine.begin() as conn:
+            result = conn.execute(
+                text(
+                    """
+                    DELETE FROM balance_cache
+                    WHERE datetime(updated_at) < datetime('now', '-' || :hours || ' hours')
+                    """
+                ),
+                {"hours": hours},
+            )
+        return result.rowcount if result.rowcount else 0
+
