@@ -309,3 +309,12 @@
 2026-05-30 10:03:37 - converter - DEBUG - Wallet fetch completed (limit=None, offset=0)
 2026-05-30 10:03:37 - converter - INFO - Exported 1 wallets to TXT: exports/wallets_20260530_100337.txt
 2026-05-30 10:03:37 - converter - INFO - Database connection closed
+2026-05-30 10:05:08 - converter - INFO - Connected to database: converter_test.db
+2026-05-30 10:05:08 - converter - INFO - Database validation successful. Total wallets: 2
+2026-05-30 10:05:08 - converter - DEBUG - Wallet fetch completed (limit=None, offset=0)
+2026-05-30 10:05:08 - converter - INFO - Exported 2 wallets to TXT: exports/test_export.txt
+2026-05-30 10:05:08 - converter - INFO - Database connection closed
+2026-05-30 10:05:08 - converter - INFO - Connected to database: return_type_test_conv.db
+2026-05-30 10:05:08 - converter - DEBUG - Wallet fetch completed (limit=None, offset=0)
+2026-05-30 10:05:08 - converter - INFO - Exported 1 wallets to TXT: exports/wallets_20260530_100508.txt
+2026-05-30 10:05:08 - converter - INFO - Database connection closed

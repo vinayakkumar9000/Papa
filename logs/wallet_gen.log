@@ -1462,3 +1462,18 @@
 2026-05-30 10:03:37 - wallet_gen - DEBUG - Generated wallet: 0x350BAbbb94C110B038B2f423F48f2CDFeedA1273
 2026-05-30 10:03:37 - wallet_gen - INFO - Database connection closed
 2026-05-30 10:03:37 - wallet_gen - INFO - Database connection closed
+2026-05-30 10:05:08 - wallet_gen - INFO - Connected to database: /tmp/tmppvmo344y/direct_test.db
+2026-05-30 10:05:08 - wallet_gen - INFO - Wallets table created or verified
+2026-05-30 10:05:08 - wallet_gen - DEBUG - Generated wallet: 0x1b4AAd689E3a91cE2eDEa6893eFb1454D5D104F8
+2026-05-30 10:05:08 - wallet_gen - DEBUG - Generated wallet: 0x3396A986e96B4E1D644ec08d882Ff055F1254963
+2026-05-30 10:05:08 - wallet_gen - DEBUG - Generated wallet: 0xDC578f08A6F2fdaEEB3ffA4DDD59DF3D2D82A5ad
+2026-05-30 10:05:08 - wallet_gen - INFO - Generation completed: 3 wallets generated
+2026-05-30 10:05:08 - wallet_gen - INFO - Database connection closed
+2026-05-30 10:05:08 - wallet_gen - INFO - Connected to database: /tmp/tmpuso6na8r/return_type_test_gen.db
+2026-05-30 10:05:08 - wallet_gen - INFO - Wallets table created or verified
+2026-05-30 10:05:08 - wallet_gen - INFO - Connected to database: /tmp/tmpuso6na8r/return_type_test_gen.db
+2026-05-30 10:05:08 - wallet_gen - INFO - Wallets table created or verified
+2026-05-30 10:05:08 - wallet_gen - DEBUG - Generated wallet: 0xbbD1A033EE616eb67fFf09a259F91617387427A2
+2026-05-30 10:05:08 - wallet_gen - DEBUG - Generated wallet: 0x52eFeF0c56125A595F642e5fa78Ecf188592734e
+2026-05-30 10:05:08 - wallet_gen - INFO - Database connection closed
+2026-05-30 10:05:08 - wallet_gen - INFO - Database connection closed
