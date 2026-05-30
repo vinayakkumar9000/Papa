@@ -9,6 +9,7 @@ from rich.console import Console
 from ai.autonomous import AutonomousController
 from ai.router import ConfirmationRequired
 from ai.tools import ToolCall
+from wallet.database import DatabaseManager
 
 
 console = Console()
@@ -38,7 +39,9 @@ def _request_confirmation(session: PromptSession, call: ToolCall) -> bool:
 
 def launch_interactive() -> None:
     session = PromptSession(history=InMemoryHistory())
-    controller = AutonomousController()
+    db = DatabaseManager()
+    db.migrate()
+    controller = AutonomousController(db=db)
     console.print("[bold cyan]Papa AI terminal[/bold cyan] (type 'exit' to quit)")
     while True:
         prompt = session.prompt("papa-ai> ").strip()
