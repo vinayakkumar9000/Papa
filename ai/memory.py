@@ -33,12 +33,10 @@ class Memory:
         if self.db is None:
             return
 
-        # Load persisted intents
-        conn = self.db.engine.begin()
         from sqlalchemy import text
 
-        try:
-            # Load all intent records
+        # Load all intent records
+        with self.db.engine.begin() as conn:
             rows = conn.execute(
                 text(
                     """
@@ -61,7 +59,8 @@ class Memory:
                     # Skip malformed records
                     pass
 
-            # Load all output records
+        # Load all output records
+        with self.db.engine.begin() as conn:
             rows = conn.execute(
                 text(
                     """
@@ -79,8 +78,6 @@ class Memory:
                 except json.JSONDecodeError:
                     # Skip malformed records
                     pass
-        finally:
-            conn.close()
 
     def _persist_intent(self, intent: Intent) -> None:
         """Persist an intent to the database."""
