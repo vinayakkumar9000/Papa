@@ -25,11 +25,33 @@ networks_app = typer.Typer(help="Network management commands")
 app.add_typer(networks_app, name="networks")
 console = Console()
 
+# Module-level state for consolidated database initialization
+_db_initialized = False
+_default_db: Optional[DatabaseManager] = None
+
+
+def _init_db_once(db_path: Optional[str] = None) -> DatabaseManager:
+    """Initialize database once with migrations. Subsequent calls return cached instance for default path."""
+    global _db_initialized, _default_db
+    
+    if db_path is None:
+        # Default path case - use cached instance
+        if not _db_initialized:
+            _default_db = DatabaseManager()
+            _default_db.migrate()
+            _db_initialized = True
+        return _default_db
+    else:
+        # Custom path case - always create new instance but migrations are idempotent
+        db = DatabaseManager(db_path=db_path)
+        db.migrate()
+        return db
+
 
 def _services(db_path: Optional[str] = None) -> tuple[DatabaseManager, ChainRegistry, TransactionSender, BalanceService]:
-    db = DatabaseManager(db_path=db_path)
-    db.migrate()
+    db = _init_db_once(db_path)
     return db, ChainRegistry(db), TransactionSender(db), BalanceService(db)
+
 
 
 @app.command("doctor")

@@ -22,112 +22,20 @@ class DatabaseManager:
         self.db_path = db_path or str(settings["database_path"])
         self.engine: Engine = create_engine(f"sqlite:///{self.db_path}", future=True)
         self.logger = setup_rotating_logger("wallet_db", "wallet.log")
+        self._initialized = False
 
     def migrate(self) -> None:
-        """Create required extension tables without modifying legacy wallets table."""
-        stmts = [
-            """
-            CREATE TABLE IF NOT EXISTS transactions (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                tx_hash TEXT UNIQUE,
-                sender TEXT NOT NULL,
-                receiver TEXT NOT NULL,
-                amount_wei TEXT NOT NULL,
-                amount_display TEXT NOT NULL,
-                chain TEXT NOT NULL,
-                status TEXT NOT NULL,
-                gas_used INTEGER,
-                gas_price_wei TEXT,
-                nonce INTEGER,
-                explorer_url TEXT,
-                error_message TEXT,
-                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-            )
-            """,
-            """
-            CREATE TABLE IF NOT EXISTS network_configs (
-                key TEXT PRIMARY KEY,
-                name TEXT NOT NULL,
-                rpc_url TEXT NOT NULL,
-                explorer TEXT NOT NULL,
-                native_token TEXT NOT NULL,
-                decimals INTEGER NOT NULL,
-                chain_id INTEGER NOT NULL,
-                is_active INTEGER NOT NULL DEFAULT 1,
-                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-            )
-            """,
-            """
-            CREATE TABLE IF NOT EXISTS wallet_tags (
-                wallet_id INTEGER NOT NULL,
-                tag TEXT NOT NULL,
-                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                UNIQUE(wallet_id, tag),
-                FOREIGN KEY (wallet_id) REFERENCES wallets(id)
-            )
-            """,
-            """
-            CREATE TABLE IF NOT EXISTS ai_memory (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                memory_key TEXT NOT NULL,
-                memory_type TEXT NOT NULL DEFAULT 'generic',
-                memory_value TEXT NOT NULL,
-                metadata_json TEXT,
-                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                UNIQUE(memory_key, memory_type)
-            )
-            """,
-            """
-            CREATE TABLE IF NOT EXISTS command_history (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                prompt TEXT NOT NULL,
-                parsed_intent TEXT,
-                outcome TEXT NOT NULL,
-                wallet_ref TEXT,
-                chain TEXT,
-                export_format TEXT,
-                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-            )
-            """,
-            """
-            CREATE VIEW IF NOT EXISTS tx_history AS
-            SELECT
-                id,
-                tx_hash,
-                sender,
-                receiver,
-                amount_wei,
-                amount_display,
-                chain,
-                status,
-                gas_used,
-                gas_price_wei,
-                nonce,
-                explorer_url,
-                error_message,
-                created_at
-            FROM transactions
-            """,
-        ]
-
-        with self.engine.begin() as conn:
-            conn.execute(
-                text(
-                    """
-                    CREATE TABLE IF NOT EXISTS wallets (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        address TEXT NOT NULL UNIQUE,
-                        private_key TEXT NOT NULL
-                    )
-                    """
-                )
-            )
-            for stmt in stmts:
-                conn.execute(text(stmt))
-
+        """Run database migrations and seed network data."""
+        if self._initialized:
+            return
+        
+        # Import here to avoid circular imports
+        from database.migrations import MigrationManager
+        
+        manager = MigrationManager(self.db_path)
+        manager.run_migrations()
         self._seed_networks_from_file()
+        self._initialized = True
 
     def _seed_networks_from_file(self) -> None:
         networks_path = project_root() / "config" / "networks.json"
@@ -471,3 +379,174 @@ class DatabaseManager:
                 {"limit": limit},
             ).mappings().all()
         return [dict(row) for row in rows]
+
+    # Transaction Queue Methods (for transaction retry logic)
+
+    def queue_transaction(
+        self,
+        tx_hash: str,
+        wallet_address: str,
+        chain: str,
+        status: str = "pending",
+        max_retries: int = 5,
+        metadata: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        """Add a transaction to the retry queue."""
+        metadata_json = json.dumps(metadata) if metadata is not None else None
+        with self.engine.begin() as conn:
+            conn.execute(
+                text(
+                    """
+                    INSERT OR IGNORE INTO transaction_queue
+                    (tx_hash, wallet_address, chain, status, max_retries, metadata_json)
+                    VALUES
+                    (:tx_hash, :wallet_address, :chain, :status, :max_retries, :metadata_json)
+                    """
+                ),
+                {
+                    "tx_hash": tx_hash,
+                    "wallet_address": wallet_address,
+                    "chain": chain,
+                    "status": status,
+                    "max_retries": max_retries,
+                    "metadata_json": metadata_json,
+                },
+            )
+
+    def get_queued_transactions(self, limit: int = 50) -> List[Dict[str, Any]]:
+        """Get pending transactions from the queue."""
+        with self.engine.begin() as conn:
+            rows = conn.execute(
+                text(
+                    """
+                    SELECT id, tx_hash, wallet_address, chain, status, retry_count, 
+                           max_retries, last_attempt_at, next_retry_at, error_message, 
+                           metadata_json, created_at, updated_at
+                    FROM transaction_queue
+                    WHERE status = 'pending'
+                    ORDER BY next_retry_at ASC NULLS FIRST
+                    LIMIT :limit
+                    """
+                ),
+                {"limit": limit},
+            ).mappings().all()
+        
+        result = []
+        for row in rows:
+            item = dict(row)
+            if item.get("metadata_json"):
+                try:
+                    item["metadata"] = json.loads(item["metadata_json"])
+                except JSONDecodeError:
+                    item["metadata"] = None
+            else:
+                item["metadata"] = None
+            result.append(item)
+        return result
+
+    def update_queued_transaction(
+        self,
+        tx_hash: str,
+        status: str,
+        error_message: Optional[str] = None,
+        retry_count: Optional[int] = None,
+        next_retry_at: Optional[str] = None,
+    ) -> None:
+        """Update a queued transaction's status and retry information."""
+        with self.engine.begin() as conn:
+            conn.execute(
+                text(
+                    """
+                    UPDATE transaction_queue
+                    SET status = :status,
+                        error_message = :error_message,
+                        retry_count = COALESCE(:retry_count, retry_count),
+                        next_retry_at = :next_retry_at,
+                        last_attempt_at = CURRENT_TIMESTAMP,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE tx_hash = :tx_hash
+                    """
+                ),
+                {
+                    "tx_hash": tx_hash,
+                    "status": status,
+                    "error_message": error_message,
+                    "retry_count": retry_count,
+                    "next_retry_at": next_retry_at,
+                },
+            )
+
+    def remove_queued_transaction(self, tx_hash: str) -> None:
+        """Remove a transaction from the queue."""
+        with self.engine.begin() as conn:
+            conn.execute(
+                text("DELETE FROM transaction_queue WHERE tx_hash = :tx_hash"),
+                {"tx_hash": tx_hash},
+            )
+
+    # Balance Cache Methods (for reducing RPC calls)
+
+    def cache_balance(self, wallet_address: str, chain: str, balance_wei: str) -> None:
+        """Cache a wallet's balance."""
+        with self.engine.begin() as conn:
+            conn.execute(
+                text(
+                    """
+                    INSERT INTO balance_cache (wallet_address, chain, balance_wei)
+                    VALUES (:wallet_address, :chain, :balance_wei)
+                    ON CONFLICT(wallet_address, chain) DO UPDATE SET
+                        balance_wei = excluded.balance_wei,
+                        updated_at = CURRENT_TIMESTAMP
+                    """
+                ),
+                {
+                    "wallet_address": wallet_address,
+                    "chain": chain,
+                    "balance_wei": balance_wei,
+                },
+            )
+
+    def get_cached_balance(self, wallet_address: str, chain: str) -> Optional[str]:
+        """Get cached balance for a wallet."""
+        with self.engine.begin() as conn:
+            result = conn.execute(
+                text(
+                    """
+                    SELECT balance_wei FROM balance_cache
+                    WHERE wallet_address = :wallet_address AND chain = :chain
+                    """
+                ),
+                {"wallet_address": wallet_address, "chain": chain},
+            ).scalar()
+        return result
+
+    def list_cached_balances(self, wallet_address: str) -> List[Dict[str, Any]]:
+        """Get cached balances for a wallet across all chains."""
+        with self.engine.begin() as conn:
+            rows = conn.execute(
+                text(
+                    """
+                    SELECT wallet_address, chain, balance_wei, updated_at
+                    FROM balance_cache
+                    WHERE wallet_address = :wallet_address
+                    ORDER BY updated_at DESC
+                    """
+                ),
+                {"wallet_address": wallet_address},
+            ).mappings().all()
+        return [dict(row) for row in rows]
+
+    def clear_expired_balance_cache(self, hours: int = 24) -> int:
+        """Clear balance cache entries older than specified hours."""
+        with self.engine.begin() as conn:
+            result = conn.execute(
+                text(
+                    """
+                    DELETE FROM balance_cache
+                    WHERE datetime(updated_at) < datetime('now', '-' || :hours || ' hours')
+                    """
+                ),
+                {"hours": hours},
+            )
+        return result.rowcount if result.rowcount else 0
+
