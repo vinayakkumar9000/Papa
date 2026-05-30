@@ -45,9 +45,22 @@ def _default_db_path() -> str:
     return str(settings["database_path"])
 
 
+# Module-level cache for default database instance
+_db_cache: Dict[str, DatabaseManager] = {}
+
+
 def _init_db(db_path: str | None = None) -> DatabaseManager:
-    db = DatabaseManager(db_path=db_path)
+    """Initialize database with migrations. Caches instances by path to avoid redundant migrations."""
+    path = db_path or _default_db_path()
+    
+    # Return cached instance if available
+    if path in _db_cache:
+        return _db_cache[path]
+    
+    # Create new instance and cache it
+    db = DatabaseManager(db_path=path)
     db.migrate()
+    _db_cache[path] = db
     return db
 
 
