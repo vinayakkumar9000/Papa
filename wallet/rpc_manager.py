@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import asyncio
 import time
 from dataclasses import dataclass, field
 from typing import List, Optional
 from threading import Lock
 
+import aiohttp
 from web3 import HTTPProvider, Web3
 
 
@@ -170,3 +172,99 @@ class RpcManager:
                 }
                 for ep in self.endpoints
             }
+
+    async def get_web3_async(self) -> Web3:
+        """
+        Get a Web3 instance connected to a healthy RPC endpoint asynchronously.
+        
+        Performs health checks and failover using async HTTP calls.
+        
+        Returns:
+            Web3 instance
+            
+        Raises:
+            ConnectionError: If no healthy endpoints are available
+        """
+        # Try to find a healthy endpoint
+        available_endpoints = [ep for ep in self.endpoints if ep.is_available(self.health_check_timeout)]
+
+        if not available_endpoints:
+            # All endpoints are unavailable, try the first one anyway
+            available_endpoints = self.endpoints
+
+        # Rotate through endpoints for load balancing
+        endpoint = available_endpoints[self.current_index % len(available_endpoints)]
+        self.current_index += 1
+
+        # Try async connection check first
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=self.timeout)) as session:
+            if await self._check_endpoint_healthy_async(session, endpoint):
+                endpoint.mark_success()
+                return Web3(HTTPProvider(endpoint.url, request_kwargs={"timeout": self.timeout}))
+            else:
+                endpoint.mark_failure()
+                return await self._get_web3_recursive_async(visited={endpoint.url})
+
+    async def _check_endpoint_healthy_async(self, session: aiohttp.ClientSession, endpoint: RpcEndpoint) -> bool:
+        """
+        Check if an endpoint is healthy using async HTTP request.
+        
+        Args:
+            session: aiohttp ClientSession
+            endpoint: RpcEndpoint to check
+            
+        Returns:
+            True if endpoint is healthy, False otherwise
+        """
+        try:
+            payload = {
+                "jsonrpc": "2.0",
+                "method": "eth_chainId",
+                "params": [],
+                "id": 1,
+            }
+            async with session.post(endpoint.url, json=payload) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    return "result" in data and data["result"] is not None
+                return False
+        except Exception:
+            return False
+
+    async def _get_web3_recursive_async(self, visited: set, depth: int = 0) -> Web3:
+        """
+        Recursively try to connect to available endpoints asynchronously.
+        
+        Args:
+            visited: Set of already-tried URLs
+            depth: Recursion depth (prevent infinite recursion)
+            
+        Returns:
+            Web3 instance
+            
+        Raises:
+            ConnectionError: If no endpoint is available
+        """
+        if depth > len(self.endpoints):
+            raise ConnectionError("All RPC endpoints failed")
+
+        available = [ep for ep in self.endpoints if ep.url not in visited and ep.is_available(self.health_check_timeout)]
+
+        if not available:
+            raise ConnectionError(f"All RPC endpoints failed or unavailable after trying {len(visited)} endpoints")
+
+        endpoint = available[0]
+        visited.add(endpoint.url)
+
+        # Try async connection check
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=self.timeout)) as session:
+            try:
+                if await self._check_endpoint_healthy_async(session, endpoint):
+                    endpoint.mark_success()
+                    return Web3(HTTPProvider(endpoint.url, request_kwargs={"timeout": self.timeout}))
+                else:
+                    endpoint.mark_failure()
+                    return await self._get_web3_recursive_async(visited=visited, depth=depth + 1)
+            except Exception as exc:
+                endpoint.mark_failure()
+                return await self._get_web3_recursive_async(visited=visited, depth=depth + 1)

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import time
 from uuid import uuid4
 from dataclasses import dataclass
@@ -259,6 +260,175 @@ class TransactionSender:
                     delay = self._get_backoff_delay(exc, attempt) or (backoff * attempt)
                     self.logger.debug("Retrying in %s seconds...", delay)
                     time.sleep(delay)
+
+        # All retries exhausted, persist failure
+        error_text = str(last_error) if last_error else "unknown error"
+        error_type_str = last_error_type.value if last_error_type else "unknown"
+
+        self.db.add_transaction(
+            TransactionRecord(
+                tx_hash=f"failed-{uuid4()}",
+                sender=sender_wallet.address,
+                receiver=receiver,
+                amount_wei=amount_wei,
+                amount_display=format_native_amount(amount_wei, chain.decimals, chain.native_token),
+                chain=chain.key,
+                status="failed",
+                error_message=f"[{error_type_str}] {error_text}",
+                nonce=nonce,
+            )
+        )
+
+        raise RuntimeError(f"Transaction failed after {retries} attempts: [{error_type_str}] {error_text}")
+
+    async def send_native_async(
+        self,
+        from_wallet: str,
+        to_address: str,
+        amount: str,
+        chain_key: str,
+        gas_limit: Optional[int] = None,
+        gas_price_wei: Optional[int] = None,
+        nonce: Optional[int] = None,
+    ) -> SendResult:
+        """
+        Send native token transaction asynchronously with async RPC and error handling.
+        
+        Features:
+        - Non-blocking async RPC calls
+        - Async backoff with asyncio.sleep()
+        - Automatic nonce management with concurrency safety
+        - Error classification and intelligent retry
+        - RPC failover support
+        - Transaction history persistence
+        
+        Args:
+            from_wallet: Source wallet reference (id, address, or tag)
+            to_address: Destination address
+            amount: Amount to transfer (e.g., "1wei", "1gwei", "0.1ether")
+            chain_key: Chain identifier
+            gas_limit: Optional gas limit override
+            gas_price_wei: Optional gas price override
+            nonce: Optional nonce override
+            
+        Returns:
+            SendResult with transaction details
+            
+        Raises:
+            RuntimeError: If transaction fails after all retries
+            ConnectionError: If RPC connection fails
+            ValueError: If chain configuration is invalid
+        """
+        chain = self.chain_registry.get(chain_key)
+        sender_wallet = self.db.resolve_wallet(str(from_wallet))
+        receiver = validate_address(to_address)
+
+        # Connect to RPC with async failover support
+        rpc_manager = self._get_rpc_manager(chain_key, chain.rpc_url)
+        w3 = await rpc_manager.get_web3_async()
+
+        if not w3.is_connected():
+            raise ConnectionError(f"RPC connection failed for {chain.name}")
+
+        amount_wei = parse_amount_to_wei(amount, decimals=chain.decimals)
+        actual_chain_id = int(w3.eth.chain_id)
+        if actual_chain_id != chain.chain_id:
+            raise ValueError(f"Chain mismatch: expected {chain.chain_id}, got {actual_chain_id}")
+
+        # Configuration
+        retries = max(1, int(self.settings.get("retry_count", 3)))
+        backoff = float(self.settings.get("retry_backoff_seconds", 1.5))
+
+        last_error: Optional[Exception] = None
+        last_error_type: Optional[ErrorType] = None
+
+        for attempt in range(1, retries + 1):
+            try:
+                # Get nonce with concurrency-safe management
+                resolved_nonce = nonce if nonce is not None else NonceManager.next_nonce(w3, sender_wallet.address)
+
+                tx_base = {
+                    "from": sender_wallet.address,
+                    "to": receiver,
+                    "value": amount_wei,
+                    "nonce": resolved_nonce,
+                    "chainId": chain.chain_id,
+                }
+
+                # Resolve gas with fallback strategy
+                resolved_gas_limit, resolved_gas_price = self.gas_manager.resolve(
+                    w3,
+                    tx_base,
+                    gas_limit=gas_limit,
+                    gas_price_wei=gas_price_wei,
+                )
+                tx_base["gas"] = resolved_gas_limit
+                tx_base["gasPrice"] = resolved_gas_price
+
+                # Sign and send transaction (blocking operations run in thread pool)
+                signed = await asyncio.to_thread(Account.sign_transaction, tx_base, sender_wallet.private_key)
+                tx_hash = await asyncio.to_thread(w3.eth.send_raw_transaction, signed.rawTransaction)
+                tx_hash_hex = tx_hash.hex()
+
+                # Wait for receipt asynchronously
+                receipt = await asyncio.to_thread(
+                    w3.eth.wait_for_transaction_receipt,
+                    tx_hash_hex,
+                    timeout=int(self.settings.get("rpc_timeout", 20))
+                )
+
+                # Transaction succeeded
+                explorer_url = f"{chain.explorer.rstrip('/')}/tx/{tx_hash_hex}"
+                status = "success" if int(receipt.get("status", 0)) == 1 else "failed"
+
+                record = TransactionRecord(
+                    tx_hash=tx_hash_hex,
+                    sender=sender_wallet.address,
+                    receiver=receiver,
+                    amount_wei=amount_wei,
+                    amount_display=format_native_amount(amount_wei, chain.decimals, chain.native_token),
+                    chain=chain.key,
+                    status=status,
+                    gas_used=int(receipt.get("gasUsed", 0)),
+                    gas_price_wei=resolved_gas_price,
+                    nonce=resolved_nonce,
+                    explorer_url=explorer_url,
+                )
+                self.db.add_transaction(record)
+
+                return SendResult(
+                    tx_hash=tx_hash_hex,
+                    explorer_url=explorer_url,
+                    chain=chain.key,
+                    sender=sender_wallet.address,
+                    receiver=receiver,
+                    amount_wei=amount_wei,
+                    status=status,
+                )
+
+            except Exception as exc:
+                last_error = exc
+                last_error_type = self._classify_error(exc)
+                should_retry = self._should_retry(exc)
+
+                self.error_logger.error(
+                    "send_attempt_async attempt=%s error_type=%s retryable=%s reason=%s",
+                    attempt,
+                    last_error_type.value,
+                    should_retry,
+                    str(exc),
+                )
+
+                if not should_retry:
+                    # Permanent error, don't retry
+                    self.logger.info("Permanent error encountered, not retrying: %s", exc)
+                    break
+
+                if attempt < retries:
+                    # Calculate adaptive backoff with async sleep
+                    delay = self._get_backoff_delay(exc, attempt) or (backoff * attempt)
+                    self.logger.debug("Retrying in %s seconds...", delay)
+                    await asyncio.sleep(delay)
 
         # All retries exhausted, persist failure
         error_text = str(last_error) if last_error else "unknown error"
